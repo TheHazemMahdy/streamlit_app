@@ -218,3 +218,24 @@ if uploaded_file:
         st.error(f"❌ Error processing file: {e}")
 else:
     st.info("Please upload an Excel file to proceed.")
+
+# 📊 Calculate totals
+total_summary = combined_df[['quantity/mt', 'invoice amount']].sum().to_frame(name='Total').T
+
+# 💡 Section header
+st.subheader("📌 Overall Totals Across All Clients")
+
+# 🔢 Metric cards
+col1, col2 = st.columns(2)
+col1.metric("📦 Total Quantity (MT)", f"{total_summary['quantity/mt'].values[0]:,.2f}")
+col2.metric("💰 Total Invoice Amount", f"{total_summary['invoice amount'].values[0]:,.2f}")
+
+# 🧾 Display full table below
+st.markdown("#### Detailed Totals Table")
+st.dataframe(
+    total_summary.style.format({
+        'quantity/mt': '{:,.2f}',
+        'invoice amount': '{:,.2f}'
+    }),
+    use_container_width=True
+)
