@@ -7,7 +7,7 @@ from itertools import zip_longest
 
 # Set page configuration
 st.set_page_config(layout="wide")
-st.title("📊 CU Analysis App (Original Logic)")
+st.title("📊 CU Analysis App")
 
 # File uploader
 uploaded_file = st.file_uploader("📂 Upload your Excel file", type=["xlsx"])
