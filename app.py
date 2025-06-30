@@ -225,19 +225,10 @@ if 'combined_df' in locals() and not combined_df.empty:
     total_summary = combined_df[['quantity/mt', 'invoice amount']].sum().to_frame(name='Total').T
 
     # 💡 Section header
-    st.subheader("📌 Overall Totals Across All Clients")
+    st.subheader("📈 Overall Totals Across All Clients")
 
     # 🔢 Metric cards
     col1, col2 = st.columns(2)
     col1.metric("📦 Total Quantity (MT)", f"{total_summary['quantity/mt'].values[0]:,.2f}")
     col2.metric("💰 Total Invoice Amount", f"{total_summary['invoice amount'].values[0]:,.2f}")
 
-    # 🧾 Display full table
-    st.markdown("#### Detailed Totals Table")
-    st.dataframe(
-        total_summary.style.format({
-            'quantity/mt': '{:,.2f}',
-            'invoice amount': '{:,.2f}'
-        }),
-        use_container_width=True
-    )
