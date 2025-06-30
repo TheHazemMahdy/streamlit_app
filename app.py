@@ -105,7 +105,7 @@ if uploaded_file:
         )
 
         # Job No by Month Table
-        st.subheader("Clients by Job No Month")
+        st.subheader("Clients by Job No")
         first_jobs = (
             combined_df[['client', 'job no']]
             .dropna()
