@@ -219,29 +219,37 @@ if uploaded_file:
 else:
     st.info("Please upload an Excel file to proceed.")
 
-# ✅ Show overall totals split by currency if combined_df is ready
+# ✅ Show overall totals if combined_df is ready
 if 'combined_df' in locals() and not combined_df.empty:
 
-    # 📊 Sum quantity and invoice amount per currency
-    currency_totals = (
+    st.subheader("📈 Overall Totals Across All Clients")
+
+    # 🔢 Prepare numbers
+    qty_by_cur = (
         combined_df
-        .groupby('currency', as_index=False)[['quantity/mt', 'invoice amount']]
+        .groupby('currency')['quantity/mt']
         .sum()
+        .rename(lambda c: c.strip().upper() if isinstance(c, str) else c)
     )
 
-    st.subheader("📈 Overall Totals by Currency")
+    total_invoice = combined_df['invoice amount'].sum()
 
-    # 💰 First line: invoice amounts (e.g., 10000 usd 1000 egp)
-    invoice_line = " ".join(
-        f"{row['invoice amount']:,.0f} {str(row['currency']).lower()}"
-        for _, row in currency_totals.iterrows()
-    )
-    st.write(f"**{invoice_line}**")
+    # 👉 Build metric cards: two for quantity (USD & EGP) + one for invoice total
+    cols = st.columns(3)
 
-    # 📦 Second line: quantities (e.g., 10000 usd 1000 egp)
-    quantity_line = " ".join(
-        f"{row['quantity/mt']:,.0f} {str(row['currency']).lower()}"
-        for _, row in currency_totals.iterrows()
+    cols[0].metric(
+        "📦 Quantity (MT) – USD",
+        f"{qty_by_cur.get('USD', 0):,.2f}"
     )
-    st.write(f"**{quantity_line}**")
+
+    cols[1].metric(
+        "📦 Quantity (MT) – EGP",
+        f"{qty_by_cur.get('EGP', 0):,.2f}"
+    )
+
+    cols[2].metric(
+        "💰 Total Invoice Amount",
+        f"{total_invoice:,.2f}"
+    )
+
 
