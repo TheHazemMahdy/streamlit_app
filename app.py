@@ -224,32 +224,25 @@ if 'combined_df' in locals() and not combined_df.empty:
 
     st.subheader("📈 Overall Totals Across All Clients")
 
-    # 🔢 Prepare numbers
-    qty_by_cur = (
+    # 📦 Overall quantity (all currencies together)
+    total_qty = combined_df['quantity/mt'].sum()
+
+    # 💰 Invoice totals per currency
+    inv_by_cur = (
         combined_df
-        .groupby('currency')['quantity/mt']
+        .groupby('currency')['invoice amount']
         .sum()
         .rename(lambda c: c.strip().upper() if isinstance(c, str) else c)
     )
 
-    total_invoice = combined_df['invoice amount'].sum()
+    # 🔢 Metric cards: one for quantity + two for invoice (USD & EGP)
+    col1, col2, col3 = st.columns(3)
 
-    # 👉 Build metric cards: two for quantity (USD & EGP) + one for invoice total
-    cols = st.columns(3)
+    col1.metric("📦 Total Quantity (MT)", f"{total_qty:,.2f}")
 
-    cols[0].metric(
-        "📦 Quantity (MT) – USD",
-        f"{qty_by_cur.get('USD', 0):,.2f}"
-    )
+    col2.metric("💰 Invoice Amount – USD", f"{inv_by_cur.get('USD', 0):,.2f}")
 
-    cols[1].metric(
-        "📦 Quantity (MT) – EGP",
-        f"{qty_by_cur.get('EGP', 0):,.2f}"
-    )
+    col3.metric("💰 Invoice Amount – EGP", f"{inv_by_cur.get('EGP', 0):,.2f}")
 
-    cols[2].metric(
-        "💰 Total Invoice Amount",
-        f"{total_invoice:,.2f}"
-    )
 
 
