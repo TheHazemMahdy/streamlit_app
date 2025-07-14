@@ -222,7 +222,7 @@ else:
 # ✅ Show overall totals split by currency if combined_df is ready
 if 'combined_df' in locals() and not combined_df.empty:
 
-    # 📊 Calculate totals per currency
+    # 📊 Sum quantity and invoice amount per currency
     currency_totals = (
         combined_df
         .groupby('currency', as_index=False)[['quantity/mt', 'invoice amount']]
@@ -231,12 +231,9 @@ if 'combined_df' in locals() and not combined_df.empty:
 
     st.subheader("📈 Overall Totals by Currency")
 
-    # 🔢 Metric cards for each currency
-    cols = st.columns(len(currency_totals))
-    for col, (_, row) in zip(cols, currency_totals.iterrows()):
-        qty   = f"{row['quantity/mt']:,.2f}"
-        inv   = f"{row['invoice amount']:,.2f}"
-        label = row['currency'] if str(row['currency']).strip() else "Unknown"
-
-        col.metric(f"📦 Total Quantity (MT) – {label}", qty)
-        col.metric(f"💰 Total Invoice Amount – {label}", inv)
+    # 🖨️ Display each currency on its own line
+    for _, row in currency_totals.iterrows():
+        cur = str(row['currency']).strip() or "unknown"
+        qty = f"{row['quantity/mt']:,.0f}"
+        inv = f"{row['invoice amount']:,.0f}"
+        st.write(f"**{qty} MT – {cur.upper()}**   |   **{inv} {cur.lower()}**")
