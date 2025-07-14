@@ -219,16 +219,24 @@ if uploaded_file:
 else:
     st.info("Please upload an Excel file to proceed.")
 
-# ✅ Show overall totals if combined_df is ready
+# ✅ Show overall totals split by currency if combined_df is ready
 if 'combined_df' in locals() and not combined_df.empty:
-    # 📊 Calculate totals
-    total_summary = combined_df[['quantity/mt', 'invoice amount']].sum().to_frame(name='Total').T
 
-    # 💡 Section header
-    st.subheader("📈 Overall Totals Across All Clients")
+    # 📊 Calculate totals per currency
+    currency_totals = (
+        combined_df
+        .groupby('currency', as_index=False)[['quantity/mt', 'invoice amount']]
+        .sum()
+    )
 
-    # 🔢 Metric cards
-    col1, col2 = st.columns(2)
-    col1.metric("📦 Total Quantity (MT)", f"{total_summary['quantity/mt'].values[0]:,.2f}")
-    col2.metric("💰 Total Invoice Amount", f"{total_summary['invoice amount'].values[0]:,.2f}")
+    st.subheader("📈 Overall Totals by Currency")
 
+    # 🔢 Metric cards for each currency
+    cols = st.columns(len(currency_totals))
+    for col, (_, row) in zip(cols, currency_totals.iterrows()):
+        qty   = f"{row['quantity/mt']:,.2f}"
+        inv   = f"{row['invoice amount']:,.2f}"
+        label = row['currency'] if str(row['currency']).strip() else "Unknown"
+
+        col.metric(f"📦 Total Quantity (MT) – {label}", qty)
+        col.metric(f"💰 Total Invoice Amount – {label}", inv)
