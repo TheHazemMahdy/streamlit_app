@@ -231,9 +231,17 @@ if 'combined_df' in locals() and not combined_df.empty:
 
     st.subheader("📈 Overall Totals by Currency")
 
-    # 🖨️ Display each currency on its own line
-    for _, row in currency_totals.iterrows():
-        cur = str(row['currency']).strip() or "unknown"
-        qty = f"{row['quantity/mt']:,.0f}"
-        inv = f"{row['invoice amount']:,.0f}"
-        st.write(f"**{qty} MT – {cur.upper()}**   |   **{inv} {cur.lower()}**")
+    # 💰 First line: invoice amounts (e.g., 10000 usd 1000 egp)
+    invoice_line = " ".join(
+        f"{row['invoice amount']:,.0f} {str(row['currency']).lower()}"
+        for _, row in currency_totals.iterrows()
+    )
+    st.write(f"**{invoice_line}**")
+
+    # 📦 Second line: quantities (e.g., 10000 usd 1000 egp)
+    quantity_line = " ".join(
+        f"{row['quantity/mt']:,.0f} {str(row['currency']).lower()}"
+        for _, row in currency_totals.iterrows()
+    )
+    st.write(f"**{quantity_line}**")
+
